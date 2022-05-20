@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha",
+    "update": "AWS_PROFILE=${AWS_PROFILE:-default}; zip -r tweetBot.zip . && aws lambda update-function-code --function-name mtn-TweetBot --zip-file fileb://tweetBot.zip --region us-east-1 --profile $AWS_PROFILE && rm tweetBot.zip",
+    "start": "AWS_PROFILE=${AWS_PROFILE:-default}; aws events enable-rule --name mtn-TweetBotSchedule-rule --profile $AWS_PROFILE --region us-east-1",
+    "prestart": "AWS_PROFILE=${AWS_PROFILE:-default}; aws lambda invoke --function-name mtn-TweetBot lambda-output.json --profile $AWS_PROFILE --region us-east-1 && rm lambda-output.json",
+    "poststart": "echo \"Running: you must manually stop\" && exit 0",
+    "stop": "AWS_PROFILE=${AWS_PROFILE:-default}; aws events disable-rule --name mtn-TweetBotSchedule-rule --profile $AWS_PROFILE --region us-east-1",
+    "poststop": "echo \"Complete: CRON Job turned off\" && exit 0"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "sentiment": "^5.0.1",
+    "twit": "^2.2.11"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "rewire": "^4.0.1"
+  }
+}
